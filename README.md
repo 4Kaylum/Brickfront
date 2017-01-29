@@ -10,9 +10,7 @@ pip install brickfront
 
 # Getting Started
 
-There's quite basic usage. For most things you don't need an API key, but for others `you may need to get one`__.
-
-__ http://brickset.com/tools/webservices/requestkey
+There's quite basic usage. For most things you don't need an API key, but for others [you may need to get one](http://brickset.com/tools/webservices/requestkey).
 
 First you need to make a `Client` object.
 
