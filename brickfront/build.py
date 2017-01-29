@@ -1,7 +1,7 @@
 class Build(object):
     '''
     A class holding the information of a LEGO set. Some attributes may be `None`. Check them before using them.
-    
+
     Called automatically by other functions. Do not manually call.
 
     :ivar setID: The ID of the set on Brickset.
@@ -26,22 +26,27 @@ class Build(object):
     def __init__(self, data):
 
         self.raw = data
-
-        self.setID = data[0].text 
-        self.number = data[1].text 
-        self.variant = data[2].text 
-        self.name = data[3].text 
-        self.year = data[4].text 
+        self.setID = data[0].text
+        self.number = data[1].text
+        self.variant = data[2].text
+        self.name = data[3].text
+        self.year = data[4].text
         self.theme = data[5].text
         self.themeGroup = data[6].text
-        self.subtheme = data[7].text 
-        self.pieces = data[8].text 
+        self.subtheme = data[7].text
+        self.pieces = data[8].text
         self.minifigs = data[9].text
         self.imageURL = data[14].text
         self.bricksetURL = data[15].text
-        self.released = {'true':True,'0':False}[data[16].text]
         self.priceUK = data[23].text
         self.priceUS = data[24].text
         self.priceCA = data[25].text
         self.priceEU = data[26].text
         self.rating = data[29].text
+        self.released = {
+            'true': True,
+            '0': False,
+            '1': True,
+            'false': False,
+            'none': False
+        }[str(data[16].text).lower()]
