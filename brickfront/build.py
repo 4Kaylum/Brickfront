@@ -23,9 +23,13 @@ class Build(object):
     :ivar rating: `float` The Brickset rating of the LEGO set.
     '''
 
-    def __init__(self, data):
+    def __init__(self, data, userHash=''):
 
         self.raw = data
+
+        if userHash != '':
+            del data[20]
+
         self.setID = int(data[0].text)
         self.number = data[1].text
         self.variant = int(data[2].text)
