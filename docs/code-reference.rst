@@ -7,7 +7,7 @@ Client
 .. autoclass:: brickfront.client.Client
    :members:
 
-Game
+Build
 ----------
 
 .. autoclass:: brickfront.build.Build
