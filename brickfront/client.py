@@ -26,9 +26,14 @@ class Client(object):
             raise _InvalidKey('The provided key was invalid.')
 
     def _getURL(self, method: str, arguments) -> str:
-        '''Returns a HTTP request'''
+        '''
+        Returns a HTTP request
+        '''
 
+        # Format the base
         x = Client._base.format(method)
+
+        # Format the url with the arguments
         if type(arguments) == str:
             x = x + arguments
         elif type(arguments) == list:
@@ -42,6 +47,7 @@ class Client(object):
         else:
             raise ValueError('Passed invalid type.')
 
+        # Return the valid call url
         return x
 
     def _isOkayRequest(self, request) -> bool:
@@ -50,6 +56,7 @@ class Client(object):
         InvalidRequest
         '''
 
+        # Check the status code of the returned request
         if request.status_code is not 200:
             w = str(request.text).split('\\r')[0][2:]
             raise _InvalidRequest(w)
@@ -61,7 +68,6 @@ class Client(object):
 
         :returns: Whether the key is valid or not.
         :rtype: `bool`
-        :raises brickfront.errors.InvalidRequest: If the site doesn't like the sent request.
         '''
 
         # Get site
@@ -86,25 +92,27 @@ class Client(object):
         :returns: A boolean value of whether or not the login request was done properly.
         :rtype: `bool`
         :raises brickfront.errors.InvalidLogin: If your login details are incorrect.
-        :raises brickfront.errors.InvalidRequest: If the site doesn't like the sent request.
         '''
 
+        # These are the values of the arguments that are to be sent to the site
         values = {
             'apiKey': self._apiKey,
             'username': username,
             'password': password
         }
 
+        # Get a login
         returned = _get(self._getURL('login', values))
 
-        # Make sure all is well
+        # Make sure that you didn't send anything to the wrong URL
         self._isOkayRequest(returned)
 
+        # Check if the login is invalid
         root = _ET.fromstring(returned.text)
         if root.text.startswith('ERROR'):
             raise _InvalidLogin(root.text[7:])
-            return False  # SHould be unnecessary but just in case
 
+        # Store the user hash
         self._userHash = root.text
         return True
 
@@ -126,7 +134,6 @@ class Client(object):
         :param str userName: The name of a user whose sets you want to search.
         :returns: A list of LEGO sets.
         :rtype: List[:class:`brickfront.build.Build`]
-        :raises brickfront.errors.InvalidRequest: If the site doesn't like the sent request.
         '''
 
         # Generate a dictionary to post
@@ -155,7 +162,7 @@ class Client(object):
         root = _ET.fromstring(returned.text)
         return [_Build(i, self._userHash) for i in root]
 
-    def getSet(self, setID: str) -> _Build:
+    def getSet(self, setID: str) -> list:
         '''
         Gets the information of one build, using its Brickset set ID
 
