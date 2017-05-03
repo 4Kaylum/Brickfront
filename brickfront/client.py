@@ -85,6 +85,7 @@ class Client(object):
         :param str password: Your Brickset password.
         :returns: A boolean value of whether or not the login request was done properly.
         :rtype: `bool`
+        :raises brickfront.errors.InvalidLogin: If your login details are incorrect.
         :raises brickfront.errors.InvalidRequest: If the site doesn't like the sent request.
         '''
 
@@ -106,7 +107,6 @@ class Client(object):
 
         self._userHash = root.text
         return True
-
 
     def getSets(self, **kwargs) -> list:
         '''

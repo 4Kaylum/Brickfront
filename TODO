@@ -1,0 +1,42 @@
+Build Data
+----------------------------
+
+getRecentlyUpdatedSets
+	Params
+		apiKey : str
+		minutesAgo : int
+	Returns
+		Array of build
+	Errors
+		No matches : returns nothing
+
+getAdditionalImages
+getReviews
+getInstructions
+getThemes
+getSubthemes
+getYears
+getThemesForUser
+getSubthemesForUser
+getYearsForUser
+
+Build Management
+----------------------------
+getCollectionTotals
+setCollection
+setCollection_owns
+setCollection_wants
+setCollection_qtyOwned
+setCollection_userNotes
+getUserNotes
+
+Minifig Management
+----------------------------
+getMinifigCollection
+setMinifigCollection
+
+Advanced Build Management
+----------------------------
+getCollectionDetail
+setCollectionDetail
+getCollectionDetailConditions
