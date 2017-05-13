@@ -13,6 +13,12 @@ Build
 .. autoclass:: brickfront.build.Build
    :members:
 
+Review
+----------
+
+.. autoclass:: brickfront.review.Review
+   :members:
+
 Exceptions
 ----------
 

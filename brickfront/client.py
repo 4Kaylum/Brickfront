@@ -4,6 +4,7 @@ from .errors import InvalidRequest as _InvalidRequest
 from .errors import InvalidKey as _InvalidKey
 from .errors import InvalidLogin as _InvalidLogin
 from .build import Build as _Build
+from .review import Review as _Review
 
 
 class Client(object):
@@ -235,3 +236,26 @@ class Client(object):
             urlList.append(imageHolder[-1].text)
 
         return urlList
+
+    def getReviews(self, setID: str) -> list:
+        '''
+        Get the reviews for a set.
+
+        :param str setID: The ID of the set you want to get the reviews of.
+        :returns: A list of reviews.
+        :rtype: List[:class:`brickfront.review.Review`]
+        '''
+
+        values = {
+            'apiKey': self._apiKey,
+            'setID': setID
+        }
+
+        # Send the GET request
+        returned = _get(self._getURL('getReviews', values))
+
+        # Make sure all is well
+        self._isOkayRequest(returned)
+
+        root = _ET.fromstring(returned.text)
+        return [_Review(i) for i in root]
