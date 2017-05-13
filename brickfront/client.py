@@ -27,7 +27,7 @@ class Client(object):
 
     def _getURL(self, method: str, arguments) -> str:
         '''
-        Returns a HTTP request
+        Returns a HTTP request.
         '''
 
         # Format the base
@@ -52,8 +52,7 @@ class Client(object):
 
     def _isOkayRequest(self, request) -> bool:
         '''
-        Returns if a request has an okay error code, otherwise raises
-        InvalidRequest
+        Returns if a request has an okay error code, otherwise raises InvalidRequest.
         '''
 
         # Check the status code of the returned request
@@ -164,12 +163,11 @@ class Client(object):
 
     def getSet(self, setID: str) -> list:
         '''
-        Gets the information of one build, using its Brickset set ID
+        Gets the information of one build, using its Brickset set ID.
 
         :param str setID: The ID of the build from Brickset.
         :returns: A single LEGO set in a list. Will return an empty list if no sets are found.
         :rtype: List[:class:`brickfront.build.Build`]
-        :raises brickfront.errors.InvalidRequest: If the site doesn't like the sent request.
         '''
 
         values = {
@@ -186,3 +184,26 @@ class Client(object):
 
         root = _ET.fromstring(returned.text)
         return [_Build(i, self._userHash) for i in root]
+
+    def getRecentlyUpdatedSets(self, minutesAgo: int) -> list:
+        '''
+        Gets the information of recently updated sets.
+
+        :param int minutesAgo: The amount of time ago that the set was updated.
+        :returns: A list of sets that were updated within the given time.
+        :rtype: List[:class:`brickfront.build.Build`]
+        '''
+
+        values = {
+            'apiKey': self._apiKey,
+            'minutesAgo': minutesAgo
+        }
+
+        # Send the GET request
+        returned = _get(self._getURL('getRecentlyUpdatedSets', values))
+
+        # Make sure all is well
+        self._isOkayRequest(returned)
+
+        root = _ET.fromstring(returned.text)
+        return [_Build(i) for i in root]

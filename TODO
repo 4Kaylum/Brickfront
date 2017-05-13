@@ -1,15 +1,5 @@
 Build Data
 ----------------------------
-
-getRecentlyUpdatedSets
-	Params
-		apiKey : str
-		minutesAgo : int
-	Returns
-		Array of build
-	Errors
-		No matches : returns nothing
-
 getAdditionalImages
 getReviews
 getInstructions
