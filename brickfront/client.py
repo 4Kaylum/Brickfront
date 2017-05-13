@@ -207,3 +207,31 @@ class Client(object):
 
         root = _ET.fromstring(returned.text)
         return [_Build(i) for i in root]
+
+    def getAdditionalImages(self, setID: str) -> list:
+        '''
+        Gets a list of URLs containing images of the set.
+
+        :param str setID: The ID of the set you want to grab the images for.
+        :returns: A list of URL strings.
+        :rtype: List[`str`]
+        '''
+
+        values = {
+            'apiKey': self._apiKey,
+            'setID': setID
+        }
+
+        # Send the GET request
+        returned = _get(self._getURL('getAdditionalImages', values))
+
+        # Make sure all is well
+        self._isOkayRequest(returned)
+
+        root = _ET.fromstring(returned.text)
+        urlList = []
+
+        for imageHolder in root:
+            urlList.append(imageHolder[-1].text)
+
+        return urlList
