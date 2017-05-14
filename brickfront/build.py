@@ -21,11 +21,14 @@ class Build(object):
     :ivar priceCA: `str` The CA price of the set.
     :ivar priceEU: `str` The EU price of the set.
     :ivar rating: `float` The Brickset rating of the LEGO set.
+    :ivar additionalImages: List[`str`]
+    :ivar reviews: List[`brickfront.review.Review`]
     '''
 
-    def __init__(self, data, userHash=''):
+    def __init__(self, data, userHash, client):
 
         self.raw = data
+        self.client = client
 
         if userHash != '':
             del data[20]
@@ -64,3 +67,41 @@ class Build(object):
         except KeyError:
             z = data[16].text 
         self.released = z
+
+        self.__additionalImages = None 
+        self.__reviews = None
+
+    def __getAdditionalImages(self) -> list:
+        '''
+        The same as calling `client.getAdditionalImages(build.setID)`
+
+        :returns: A list of URL strings.
+        :rtype: List[`str`]
+        '''
+
+        self.__additionalImages = self.client.getAdditionalImages(self.setID)
+        return self.__additionalImages
+
+    @property 
+    def additionalImages(self):
+        if self.__additionalImages == None:
+            self.__additionalImages = self.__getAdditionalImages()
+        return self.__additionalImages
+
+    def __getReviews(self) -> list:
+        '''
+        The same as calling `client.getReviews(build.setID)`
+
+        :returns: A list of reviews.
+        :rtype: List[:class:`brickfront.review.Review`]
+        '''
+
+        self.__reviews = self.client.getReviews(self.setID)
+        return self.__reviews
+
+    @property
+    def reviews(self):
+        if self.__reviews == None:
+            self.__reviews = self.__getReviews()
+        return self.__reviews
+

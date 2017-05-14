@@ -17,23 +17,23 @@ class Client(object):
     :raises brickfront.errors.InvalidKey: If the key provided is invalid.
     '''
 
-    _base = 'http://brickset.com/api/v2.asmx/{}?'
+    __base = 'http://brickset.com/api/v2.asmx/{}?'
 
     def __init__(self, apiKey: str):
 
-        self._apiKey = apiKey
-        self._userHash = ''
+        self.__apiKey = apiKey
+        self.__userHash = ''
 
         if not self.checkKey():
             raise _InvalidKey('The provided key was invalid.')
 
-    def _getURL(self, method: str, arguments) -> str:
+    def __getURL(self, method: str, arguments) -> str:
         '''
         Returns a HTTP request.
         '''
 
         # Format the base
-        x = Client._base.format(method)
+        x = Client.__base.format(method)
 
         # Format the url with the arguments
         if type(arguments) == str:
@@ -52,7 +52,7 @@ class Client(object):
         # Return the valid call url
         return x
 
-    def _isOkayRequest(self, request) -> bool:
+    def __isOkayRequest(self, request) -> bool:
         '''
         Returns if a request has an okay error code, otherwise raises InvalidRequest.
         '''
@@ -72,10 +72,10 @@ class Client(object):
         '''
 
         # Get site
-        returned = _get(self._getURL('checkKey', 'apiKey={}'.format(self._apiKey)))
+        returned = _get(self.__getURL('checkKey', 'apiKey={}'.format(self.__apiKey)))
         
         # Make sure all is well
-        self._isOkayRequest(returned)
+        self.__isOkayRequest(returned)
 
         # Parse XML
         root = _ET.fromstring(returned.text)
@@ -97,16 +97,16 @@ class Client(object):
 
         # These are the values of the arguments that are to be sent to the site
         values = {
-            'apiKey': self._apiKey,
+            'apiKey': self.__apiKey,
             'username': username,
             'password': password
         }
 
         # Get a login
-        returned = _get(self._getURL('login', values))
+        returned = _get(self.__getURL('login', values))
 
         # Make sure that you didn't send anything to the wrong URL
-        self._isOkayRequest(returned)
+        self.__isOkayRequest(returned)
 
         # Check if the login is invalid
         root = _ET.fromstring(returned.text)
@@ -114,7 +114,7 @@ class Client(object):
             raise _InvalidLogin(root.text[7:])
 
         # Store the user hash
-        self._userHash = root.text
+        self.__userHash = root.text
         return True
 
     def getSets(self, **kwargs) -> list:
@@ -139,8 +139,8 @@ class Client(object):
 
         # Generate a dictionary to post
         values = {
-            'apiKey': self._apiKey,
-            'userHash': self._userHash,
+            'apiKey': self.__apiKey,
+            'userHash': self.__userHash,
             'query': kwargs.get('query', ''),
             'theme': kwargs.get('theme', ''),
             'subtheme': kwargs.get('subtheme', ''),
@@ -155,13 +155,13 @@ class Client(object):
         }
 
         # Send the GET request.
-        returned = _get(self._getURL('getSets', values))
+        returned = _get(self.__getURL('getSets', values))
         
         # Make sure all is well
-        self._isOkayRequest(returned)
+        self.__isOkayRequest(returned)
 
         root = _ET.fromstring(returned.text)
-        return [_Build(i, self._userHash) for i in root]
+        return [_Build(i, self.__userHash, self) for i in root]
 
     def getSet(self, setID: str) -> _Build:
         '''
@@ -174,19 +174,19 @@ class Client(object):
         '''
 
         values = {
-            'apiKey': self._apiKey,
-            'userHash': self._userHash,
+            'apiKey': self.__apiKey,
+            'userHash': self.__userHash,
             'setID': setID
         }
 
         # Send the GET request.
-        returned = _get(self._getURL('getSet', values))
+        returned = _get(self.__getURL('getSet', values))
         
         # Make sure all is well
-        self._isOkayRequest(returned)
+        self.__isOkayRequest(returned)
 
         root = _ET.fromstring(returned.text)
-        v = [_Build(i, self._userHash) for i in root]
+        v = [_Build(i, self.__userHash, self) for i in root]
         if len(v) == 0:
             raise _InvalidSetID
         return v[0]
@@ -201,18 +201,18 @@ class Client(object):
         '''
 
         values = {
-            'apiKey': self._apiKey,
+            'apiKey': self.__apiKey,
             'minutesAgo': minutesAgo
         }
 
         # Send the GET request
-        returned = _get(self._getURL('getRecentlyUpdatedSets', values))
+        returned = _get(self.__getURL('getRecentlyUpdatedSets', values))
 
         # Make sure all is well
-        self._isOkayRequest(returned)
+        self.__isOkayRequest(returned)
 
         root = _ET.fromstring(returned.text)
-        return [_Build(i, self._userHash) for i in root]
+        return [_Build(i, self.__userHash, self) for i in root]
 
     def getAdditionalImages(self, setID: str) -> list:
         '''
@@ -225,15 +225,15 @@ class Client(object):
         '''
 
         values = {
-            'apiKey': self._apiKey,
+            'apiKey': self.__apiKey,
             'setID': setID
         }
 
         # Send the GET request
-        returned = _get(self._getURL('getAdditionalImages', values))
+        returned = _get(self.__getURL('getAdditionalImages', values))
 
         # Make sure all is well
-        self._isOkayRequest(returned)
+        self.__isOkayRequest(returned)
 
         root = _ET.fromstring(returned.text)
         urlList = []
@@ -254,15 +254,15 @@ class Client(object):
         '''
 
         values = {
-            'apiKey': self._apiKey,
+            'apiKey': self.__apiKey,
             'setID': setID
         }
 
         # Send the GET request
-        returned = _get(self._getURL('getReviews', values))
+        returned = _get(self.__getURL('getReviews', values))
 
         # Make sure all is well
-        self._isOkayRequest(returned)
+        self.__isOkayRequest(returned)
 
         root = _ET.fromstring(returned.text)
         return [_Review(i) for i in root]
