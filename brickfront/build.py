@@ -30,7 +30,7 @@ class Build(object):
         if userHash != '':
             del data[20]
 
-        self.setID = int(data[0].text)
+        self.setID = str(data[0].text)
         self.number = data[1].text
         self.variant = int(data[2].text)
         self.name = data[3].text

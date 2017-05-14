@@ -28,8 +28,10 @@ From there, you can make requests through your client to be able to get differen
 >>> build = setList[18]
 >>> build.name
 "Jabba's Palace"
+>>> build.setID
+'2141'
 >>> build.pieces
-'231'
+231
 >>> build.priceUK
 '27.99'
 ```
