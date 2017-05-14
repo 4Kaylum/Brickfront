@@ -221,7 +221,7 @@ class Client(object):
         :param str setID: The ID of the set you want to grab the images for.
         :returns: A list of URL strings.
         :rtype: List[`str`]
-        .. warning:: If a set ID is invalid, an empty list will be returned.
+        .. warning:: An empty list will be returned if there are no additional images, or if the set ID is invalid.
         '''
 
         values = {
@@ -250,7 +250,7 @@ class Client(object):
         :param str setID: The ID of the set you want to get the reviews of.
         :returns: A list of reviews.
         :rtype: List[:class:`brickfront.review.Review`]
-        .. warning:: If a set ID is invalid, an empty list will be returned.
+        .. warning:: An empty list will be returned if there are no reviews, or if the set ID is invalid.
         '''
 
         values = {
@@ -266,3 +266,27 @@ class Client(object):
 
         root = _ET.fromstring(returned.text)
         return [_Review(i) for i in root]
+
+    def getInstructions(self, setID: str) -> list:
+        '''
+        Get the instructions for a set.
+
+        :param str setID: The ID for the set you want to get the instructions of.
+        :returns: A list of URLs to instructions.
+        :rtype: List[`str`]
+        .. warning:: An empty list will be returned if there are no instructions, or if the set ID is invalid.
+        '''
+
+        values = {
+            'apiKey': self.__apiKey,
+            'setID': setID
+        }
+
+        # Send the GET request
+        returned = _get(self.__getURL('getInstructions', values))
+
+        # Make sure all is well
+        self.__isOkayRequest(returned)
+
+        root = _ET.fromstring(returned.text)
+        return [i[0].text for i in [o for o in root]]

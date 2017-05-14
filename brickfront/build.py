@@ -23,6 +23,7 @@ class Build(object):
     :ivar rating: `float` The Brickset rating of the LEGO set.
     :ivar additionalImages: List[`str`]
     :ivar reviews: List[`brickfront.review.Review`]
+    :ivar instructions: List[`str`]
     '''
 
     def __init__(self, data, userHash, client):
@@ -70,6 +71,7 @@ class Build(object):
 
         self.__additionalImages = None 
         self.__reviews = None
+        self.__instructions = None
 
     def __getAdditionalImages(self) -> list:
         '''
@@ -104,4 +106,21 @@ class Build(object):
         if self.__reviews == None:
             self.__reviews = self.__getReviews()
         return self.__reviews
+
+    def __getInstructions(self) -> list:
+        '''
+        The same as calling `client.getInstructions(build.setID)`
+
+        :returns: A list of instructions.
+        :rtype: List[`str`]
+        '''
+
+        self.__instructions = self.client.getInstructions(self.setID)
+        return self.__instructions
+
+    @property 
+    def instructions(self):
+        if self.__instructions == None:
+            self.__instructions = self.__getInstructions()
+        return self.__instructions
 
