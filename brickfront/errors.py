@@ -20,3 +20,10 @@ class InvalidLogin(Exception):
     '''
 
     pass
+
+class InvalidSetID(Exception):
+    '''
+    The set ID that was passed is invalid - eg it doesn't exist.
+    '''
+
+    pass

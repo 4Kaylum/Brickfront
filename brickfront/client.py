@@ -3,6 +3,7 @@ from xml.etree import ElementTree as _ET
 from .errors import InvalidRequest as _InvalidRequest
 from .errors import InvalidKey as _InvalidKey
 from .errors import InvalidLogin as _InvalidLogin
+from .errors import InvalidSetID as _InvalidSetID
 from .build import Build as _Build
 from .review import Review as _Review
 
@@ -57,7 +58,7 @@ class Client(object):
         '''
 
         # Check the status code of the returned request
-        if request.status_code is not 200:
+        if str(request.status_code)[0] not in ['2', '3']:
             w = str(request.text).split('\\r')[0][2:]
             raise _InvalidRequest(w)
         return
@@ -162,13 +163,14 @@ class Client(object):
         root = _ET.fromstring(returned.text)
         return [_Build(i, self._userHash) for i in root]
 
-    def getSet(self, setID: str) -> list:
+    def getSet(self, setID: str) -> _Build:
         '''
         Gets the information of one build, using its Brickset set ID.
 
         :param str setID: The ID of the build from Brickset.
-        :returns: A single LEGO set in a list. Will return an empty list if no sets are found.
-        :rtype: List[:class:`brickfront.build.Build`]
+        :returns: A single LEGO set object.
+        :rtype: :class:`brickfront.build.Build`
+        :raises brickfront.errors.InvalidSetID: If no sets exist by that ID.
         '''
 
         values = {
@@ -184,7 +186,10 @@ class Client(object):
         self._isOkayRequest(returned)
 
         root = _ET.fromstring(returned.text)
-        return [_Build(i, self._userHash) for i in root]
+        v = [_Build(i, self._userHash) for i in root]
+        if len(v) == 0:
+            raise _InvalidSetID
+        return v[0]
 
     def getRecentlyUpdatedSets(self, minutesAgo: int) -> list:
         '''
@@ -207,7 +212,7 @@ class Client(object):
         self._isOkayRequest(returned)
 
         root = _ET.fromstring(returned.text)
-        return [_Build(i) for i in root]
+        return [_Build(i, self._userHash) for i in root]
 
     def getAdditionalImages(self, setID: str) -> list:
         '''
@@ -216,6 +221,7 @@ class Client(object):
         :param str setID: The ID of the set you want to grab the images for.
         :returns: A list of URL strings.
         :rtype: List[`str`]
+        .. warning:: If a set ID is invalid, an empty list will be returned.
         '''
 
         values = {
@@ -244,6 +250,7 @@ class Client(object):
         :param str setID: The ID of the set you want to get the reviews of.
         :returns: A list of reviews.
         :rtype: List[:class:`brickfront.review.Review`]
+        .. warning:: If a set ID is invalid, an empty list will be returned.
         '''
 
         values = {
