@@ -5,7 +5,7 @@ with open('PyPI_README.rst') as a:
 
 setup(
     name='brickfront',
-    version='0.0.3',
+    version='0.0.4',
     description='A wrapper for Brickset written in Python.',
     long_description=long_description,
     author='Callum Bartlett',
