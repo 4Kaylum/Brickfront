@@ -73,7 +73,7 @@ class Build(object):
         self.__reviews = None
         self.__instructions = None
 
-    def __getAdditionalImages(self) -> list:
+    def __getAdditionalImages(self):
         '''
         The same as calling `client.getAdditionalImages(build.setID)`
 
@@ -90,7 +90,7 @@ class Build(object):
             self.__additionalImages = self.__getAdditionalImages()
         return self.__additionalImages
 
-    def __getReviews(self) -> list:
+    def __getReviews(self):
         '''
         The same as calling `client.getReviews(build.setID)`
 
@@ -107,7 +107,7 @@ class Build(object):
             self.__reviews = self.__getReviews()
         return self.__reviews
 
-    def __getInstructions(self) -> list:
+    def __getInstructions(self):
         '''
         The same as calling `client.getInstructions(build.setID)`
 

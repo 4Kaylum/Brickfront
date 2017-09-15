@@ -19,7 +19,7 @@ class Client(object):
 
     __base = 'http://brickset.com/api/v2.asmx/{}?'
 
-    def __init__(self, apiKey: str):
+    def __init__(self, apiKey):
 
         self.__apiKey = apiKey
         self.__userHash = ''
@@ -27,7 +27,7 @@ class Client(object):
         if not self.checkKey():
             raise _InvalidKey('The provided key was invalid.')
 
-    def __getURL(self, method: str, arguments) -> str:
+    def __getURL(self, method, arguments):
         '''
         Returns a HTTP request.
         '''
@@ -52,7 +52,7 @@ class Client(object):
         # Return the valid call url
         return x
 
-    def __isOkayRequest(self, request) -> bool:
+    def __isOkayRequest(self, request):
         '''
         Returns if a request has an okay error code, otherwise raises InvalidRequest.
         '''
@@ -63,7 +63,7 @@ class Client(object):
             raise _InvalidRequest(w)
         return
 
-    def checkKey(self) -> bool:
+    def checkKey(self):
         '''
         Checks that an API key is valid.
 
@@ -83,7 +83,7 @@ class Client(object):
         # Return bool
         return root.text == 'OK'
 
-    def login(self, username: str, password: str) -> bool:
+    def login(self, username, password):
         '''
         Logs into Brickset as a user, returning a userhash, which can be used in other methods.
         The userhash is stored inside the client.
@@ -117,7 +117,7 @@ class Client(object):
         self.__userHash = root.text
         return True
 
-    def getSets(self, **kwargs) -> list:
+    def getSets(self, **kwargs):
         '''
         A way to get different sets from a query.
         All parameters are optional, but you should *probably* use some.
@@ -163,7 +163,7 @@ class Client(object):
         root = _ET.fromstring(returned.text)
         return [_Build(i, self.__userHash, self) for i in root]
 
-    def getSet(self, setID: str) -> _Build:
+    def getSet(self, setID):
         '''
         Gets the information of one build, using its Brickset set ID.
 
@@ -191,7 +191,7 @@ class Client(object):
             raise _InvalidSetID
         return v[0]
 
-    def getRecentlyUpdatedSets(self, minutesAgo: int) -> list:
+    def getRecentlyUpdatedSets(self, minutesAgo):
         '''
         Gets the information of recently updated sets.
 
@@ -214,7 +214,7 @@ class Client(object):
         root = _ET.fromstring(returned.text)
         return [_Build(i, self.__userHash, self) for i in root]
 
-    def getAdditionalImages(self, setID: str) -> list:
+    def getAdditionalImages(self, setID):
         '''
         Gets a list of URLs containing images of the set.
 
@@ -243,7 +243,7 @@ class Client(object):
 
         return urlList
 
-    def getReviews(self, setID: str) -> list:
+    def getReviews(self, setID):
         '''
         Get the reviews for a set.
 
@@ -267,7 +267,7 @@ class Client(object):
         root = _ET.fromstring(returned.text)
         return [_Review(i) for i in root]
 
-    def getInstructions(self, setID: str) -> list:
+    def getInstructions(self, setID):
         '''
         Get the instructions for a set.
 
