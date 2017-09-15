@@ -29,7 +29,7 @@ class Build(object):
     def __init__(self, data, userHash, client):
 
         self.raw = data
-        self.client = client
+        self._client = client
 
         if userHash != '':
             del data[20]
@@ -57,6 +57,7 @@ class Build(object):
         try: z = float(data[29].text)
         except TypeError: z = None
         self.rating = z
+
         try:
             z = {
                 'true': True,
@@ -69,11 +70,11 @@ class Build(object):
             z = data[16].text 
         self.released = z
 
-        self.__additionalImages = None 
-        self.__reviews = None
-        self.__instructions = None
+        self._additionalImages = None 
+        self._reviews = None
+        self._instructions = None
 
-    def __getAdditionalImages(self):
+    def _getAdditionalImages(self):
         '''
         The same as calling `client.getAdditionalImages(build.setID)`
 
@@ -81,16 +82,16 @@ class Build(object):
         :rtype: List[`str`]
         '''
 
-        self.__additionalImages = self.client.getAdditionalImages(self.setID)
-        return self.__additionalImages
+        self._additionalImages = self._client.getAdditionalImages(self.setID)
+        return self._additionalImages
 
     @property 
     def additionalImages(self):
-        if self.__additionalImages == None:
-            self.__additionalImages = self.__getAdditionalImages()
-        return self.__additionalImages
+        if self._additionalImages is None:
+            self._additionalImages = self._getAdditionalImages()
+        return self._additionalImages
 
-    def __getReviews(self):
+    def _getReviews(self):
         '''
         The same as calling `client.getReviews(build.setID)`
 
@@ -98,16 +99,16 @@ class Build(object):
         :rtype: List[:class:`brickfront.review.Review`]
         '''
 
-        self.__reviews = self.client.getReviews(self.setID)
-        return self.__reviews
+        self._reviews = self._client.getReviews(self.setID)
+        return self._reviews
 
     @property
     def reviews(self):
-        if self.__reviews == None:
-            self.__reviews = self.__getReviews()
-        return self.__reviews
+        if self._reviews is None:
+            self._reviews = self._getReviews()
+        return self._reviews
 
-    def __getInstructions(self):
+    def _getInstructions(self):
         '''
         The same as calling `client.getInstructions(build.setID)`
 
@@ -115,12 +116,11 @@ class Build(object):
         :rtype: List[`str`]
         '''
 
-        self.__instructions = self.client.getInstructions(self.setID)
-        return self.__instructions
+        self._instructions = self._client.getInstructions(self.setID)
+        return self._instructions
 
     @property 
     def instructions(self):
-        if self.__instructions == None:
-            self.__instructions = self.__getInstructions()
-        return self.__instructions
-
+        if self._instructions is None:
+            self._instructions = self._getInstructions()
+        return self._instructions
