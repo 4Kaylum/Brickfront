@@ -6,7 +6,7 @@ class InvalidRequest(Exception):
     pass
 
 
-class InvalidKey(Exception):
+class InvalidApiKey(Exception):
     '''
     The API key provided was invalid and cannot be used.
     '''
@@ -14,7 +14,7 @@ class InvalidKey(Exception):
     pass
 
 
-class InvalidLogin(Exception):
+class InvalidLoginCredentials(Exception):
     '''
     The login credentials used were invalid.
     '''

@@ -6,7 +6,8 @@ class Build(object):
     :ivar str setID: The ID of the set from Brickset.
     :ivar str number: The number of the set on Brickset.
     :ivar int variant: The variant of the LEGO set.
-    :ivar str year: The `year in which the set came out.
+    :ivar str name: The name of the set.
+    :ivar str year: The year in which the set came out.
     :ivar str theme: The theme of the set.
     :ivar str themeGroup: The type of the theme.
     :ivar str subtheme: Any other theme that the set may belong to.
@@ -22,15 +23,15 @@ class Build(object):
     :ivar float rating: The Brickset rating of the LEGO set.
     :ivar list additionalImages: A list of image URLs.
     :ivar list reviews: A list of :class:`brickfront.review.Review` objects representing reviews.
-    :ivar list instructions: List[`str`]
+    :ivar list instructions: A list of strings for the instructions of the build.
     '''
 
-    def __init__(self, data, userHash, client):
+    def __init__(self, data, client):
 
         self.raw = data
         self._client = client
 
-        if userHash != '':
+        if client.userHash != '':
             del data[20]
 
         self.setID = self.id = str(data[0].text)
