@@ -1,11 +1,8 @@
-from xml.etree import ElementTree as _ET
-from requests import get as _get
-from .errors import InvalidRequest as _InvalidRequest
-from .errors import InvalidKey as _InvalidKey
-from .errors import InvalidLogin as _InvalidLogin
-from .errors import InvalidSetID as _InvalidSetID
-from .build import Build as _Build
-from .review import Review as _Review
+from xml.etree import ElementTree as ET
+from requests import get
+from .errors import InvalidRequest, InvalidKey, InvalidLogin, InvalidSetID
+from .build import Build
+from .review import Review
 
 
 class Client(object):
@@ -17,15 +14,15 @@ class Client(object):
     :raises brickfront.errors.InvalidKey: If the key provided is invalid.
     '''
 
-    _base = 'http://brickset.com/api/v2.asmx/{}'
+    ENDPOINT = 'http://brickset.com/api/v2.asmx/{}'
 
     def __init__(self, apiKey):
 
-        self._apiKey = apiKey
-        self._userHash = ''
+        self.apiKey = apiKey
+        self.userHash = ''
 
         if not self.checkKey():
-            raise _InvalidKey('The provided key was invalid.')
+            raise InvalidKey('The provided key was invalid.')
 
     @staticmethod
     def _checkResponse(request):
@@ -36,7 +33,7 @@ class Client(object):
         # Check the status code of the returned request
         if str(request.status_code)[0] not in ['2', '3']:
             w = str(request.text).split('\\r')[0][2:]
-            raise _InvalidRequest(w)
+            raise InvalidRequest(w)
         return
 
     def checkKey(self):
@@ -48,17 +45,19 @@ class Client(object):
         '''
 
         # Get site
-        url = Client._base.format('checkKey')
-        returned = _get(url, params={'apiKey': self._apiKey})
+        url = Client.ENDPOINT.format('checkKey')
+        returned = get(url, params={'apiKey': self.apiKey})
         
         # Make sure all is well
         self._checkResponse(returned)
 
         # Parse XML
-        root = _ET.fromstring(returned.text)
+        root = ET.fromstring(returned.text)
         
         # Return bool
-        return root.text == 'OK'
+        if root.text == 'OK':
+            return True
+        raise InvalidKey
 
     def login(self, username, password):
         '''
@@ -74,25 +73,25 @@ class Client(object):
 
         # These are the values of the arguments that are to be sent to the site
         params = {
-            'apiKey': self._apiKey,
+            'apiKey': self.apiKey,
             'username': username,
             'password': password
         }
 
         # Get a login
-        url = Client._base.format('login')
-        returned = _get(url, params=params)
+        url = Client.ENDPOINT.format('login')
+        returned = get(url, params=params)
 
         # Make sure that you didn't send anything to the wrong URL
         self._checkResponse(returned)
 
         # Check if the login is invalid
-        root = _ET.fromstring(returned.text)
+        root = ET.fromstring(returned.text)
         if root.text.startswith('ERROR'):
-            raise _InvalidLogin(root.text[7:])
+            raise InvalidLogin(root.text[7:])
 
         # Store the user hash
-        self._userHash = root.text
+        self.userHash = root.text
         return True
 
     def getSets(self, **kwargs):
@@ -117,8 +116,8 @@ class Client(object):
 
         # Generate a dictionary to post
         params = {
-            'apiKey': self._apiKey,
-            'userHash': self._userHash,
+            'apiKey': self.apiKey,
+            'userHash': self.userHash,
             'query': kwargs.get('query', ''),
             'theme': kwargs.get('theme', ''),
             'subtheme': kwargs.get('subtheme', ''),
@@ -133,14 +132,14 @@ class Client(object):
         }
 
         # Send the GET request.
-        url = Client._base.format('getSets')
-        returned = _get(url, params=params)
+        url = Client.ENDPOINT.format('getSets')
+        returned = get(url, params=params)
         
         # Make sure all is well
         self._checkResponse(returned)
 
-        root = _ET.fromstring(returned.text)
-        return [_Build(i, self._userHash, self) for i in root]
+        root = ET.fromstring(returned.text)
+        return [Build(i, self.userHash, self) for i in root]
 
     def getSet(self, setID):
         '''
@@ -153,25 +152,25 @@ class Client(object):
         '''
 
         params = {
-            'apiKey': self._apiKey,
-            'userHash': self._userHash,
+            'apiKey': self.apiKey,
+            'userHash': self.userHash,
             'setID': setID
         }
 
         # Send the GET request.
-        url = Client._base.format('getSet')
-        returned = _get(url, params=params)
+        url = Client.ENDPOINT.format('getSet')
+        returned = get(url, params=params)
         
         # Make sure all is well
         self._checkResponse(returned)
 
         # Put it into a Build class
-        root = _ET.fromstring(returned.text)
-        v = [_Build(i, self._userHash, self) for i in root]
+        root = ET.fromstring(returned.text)
+        v = [Build(i, self.userHash, self) for i in root]
         
         # Raise an error if there's no results
         if not v:
-            raise _InvalidSetID
+            raise InvalidSetID
         return v[0]
 
     def getRecentlyUpdatedSets(self, minutesAgo):
@@ -185,19 +184,19 @@ class Client(object):
         '''
 
         params = {
-            'apiKey': self._apiKey,
+            'apiKey': self.apiKey,
             'minutesAgo': minutesAgo
         }
 
         # Send the GET request
-        url = Client._base.format('getRecentlyUpdatedSets')
-        returned = _get(url, params=params)
+        url = Client.ENDPOINT.format('getRecentlyUpdatedSets')
+        returned = get(url, params=params)
 
         # Make sure all is well
         self._checkResponse(returned)
 
-        root = _ET.fromstring(returned.text)
-        return [_Build(i, self._userHash, self) for i in root]
+        root = ET.fromstring(returned.text)
+        return [Build(i, self.userHash, self) for i in root]
 
     def getAdditionalImages(self, setID):
         '''
@@ -210,19 +209,19 @@ class Client(object):
         '''
 
         params = {
-            'apiKey': self._apiKey,
+            'apiKey': self.apiKey,
             'setID': setID
         }
 
         # Send the GET request
-        url = Client._base.format('getAdditionalImages')
-        returned = _get(url, params=params)
+        url = Client.ENDPOINT.format('getAdditionalImages')
+        returned = get(url, params=params)
 
         # Make sure all is well
         self._checkResponse(returned)
 
         # I really fuckin hate XML
-        root = _ET.fromstring(returned.text)
+        root = ET.fromstring(returned.text)
         urlList = []
 
         for imageHolder in root:
@@ -241,19 +240,19 @@ class Client(object):
         '''
 
         params = {
-            'apiKey': self._apiKey,
+            'apiKey': self.apiKey,
             'setID': setID
         }
 
         # Send the GET request
-        url = Client._base.format('getReviews')
-        returned = _get(url, params=params)
+        url = Client.ENDPOINT.format('getReviews')
+        returned = get(url, params=params)
 
         # Make sure all is well
         self._checkResponse(returned)
 
-        root = _ET.fromstring(returned.text)
-        return [_Review(i) for i in root]
+        root = ET.fromstring(returned.text)
+        return [Review(i) for i in root]
 
     def getInstructions(self, setID):
         '''
@@ -261,21 +260,21 @@ class Client(object):
 
         :param str setID: The ID for the set you want to get the instructions of.
         :returns: A list of URLs to instructions.
-        :rtype: List[`str`]
+        :rtype: List[`dict`]
         .. warning:: An empty list will be returned if there are no instructions, or if the set ID is invalid.
         '''
 
         params = {
-            'apiKey': self._apiKey,
+            'apiKey': self.apiKey,
             'setID': setID
         }
 
         # Send the GET request
-        url = Client._base.format('getInstructions')
-        returned = _get(url, params=params)
+        url = Client.ENDPOINT.format('getInstructions')
+        returned = get(url, params=params)
 
         # Make sure all is well
         self._checkResponse(returned)
 
-        root = _ET.fromstring(returned.text)
+        root = ET.fromstring(returned.text)
         return [i[0].text for i in [o for o in root]]

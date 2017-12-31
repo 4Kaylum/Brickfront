@@ -1,29 +1,28 @@
 class Build(object):
     '''
-    A class holding the information of a LEGO set. Some attributes may be `None`. Check them before using them.
+    A class holding the information of a LEGO set. Some attributes may be ``None``. 
+    There is no need to create an instance of a ``Build`` object yourself - it won't go well.
 
-    Called automatically by other functions. Do not manually call.
-
-    :ivar setID: The `int` ID of the set on Brickset.
-    :ivar number: The number of the set on Brickset, held as a `str`.
-    :ivar variant: The `int` variant of the LEGO set.
-    :ivar year: The `str` year in which the set came out.
-    :ivar theme: `str` The theme of the set.
-    :ivar themeGroup: `str` The type of the theme.
-    :ivar subtheme: `str` Any other theme that the set may belong to.
-    :ivar pieces: `int` The number of pieces in the set.
-    :ivar minifigs: `int` The number of minifigs that the set may come with.
-    :ivar imageURL: `str` The URL of the image of the set.
-    :ivar bricksetURL: `str` The link to the Brickset page of the set.
-    :ivar released: `bool` Whether or not the set has been released.
-    :ivar priceUK: `str` The UK price of the set.
-    :ivar priceUS: `str` The US price of the set.
-    :ivar priceCA: `str` The CA price of the set.
-    :ivar priceEU: `str` The EU price of the set.
-    :ivar rating: `float` The Brickset rating of the LEGO set.
-    :ivar additionalImages: List[`str`]
-    :ivar reviews: List[`brickfront.review.Review`]
-    :ivar instructions: List[`str`]
+    :ivar str setID: The ID of the set from Brickset.
+    :ivar str number: The number of the set on Brickset.
+    :ivar int variant: The variant of the LEGO set.
+    :ivar str year: The `year in which the set came out.
+    :ivar str theme: The theme of the set.
+    :ivar str themeGroup: The type of the theme.
+    :ivar str subtheme: Any other theme that the set may belong to.
+    :ivar int pieces: The number of pieces in the set.
+    :ivar int minifigs: The number of minifigs that the set may come with.
+    :ivar str imageURL: The URL of the image of the set.
+    :ivar str bricksetURL: The link to the Brickset page of the set.
+    :ivar bool released: Whether or not the set has been released.
+    :ivar str priceUK: The UK price of the set.
+    :ivar str priceUS: The US price of the set.
+    :ivar str priceCA: The CA price of the set.
+    :ivar str priceEU: The EU price of the set.
+    :ivar float rating: The Brickset rating of the LEGO set.
+    :ivar list additionalImages: A list of image URLs.
+    :ivar list reviews: A list of :class:`brickfront.review.Review` objects representing reviews.
+    :ivar list instructions: List[`str`]
     '''
 
     def __init__(self, data, userHash, client):
@@ -34,7 +33,7 @@ class Build(object):
         if userHash != '':
             del data[20]
 
-        self.setID = str(data[0].text)
+        self.setID = self.id = str(data[0].text)
         self.number = data[1].text
         self.variant = int(data[2].text)
         self.name = data[3].text
@@ -70,11 +69,13 @@ class Build(object):
             z = data[16].text 
         self.released = z
 
+        # A simple cache of these items - defaulting to nonexistent
         self._additionalImages = None 
         self._reviews = None
         self._instructions = None
 
-    def _getAdditionalImages(self):
+
+    def getAdditionalImages(self):
         '''
         The same as calling `client.getAdditionalImages(build.setID)`
 
@@ -85,13 +86,15 @@ class Build(object):
         self._additionalImages = self._client.getAdditionalImages(self.setID)
         return self._additionalImages
 
+
     @property 
     def additionalImages(self):
         if self._additionalImages is None:
-            self._additionalImages = self._getAdditionalImages()
+            self._additionalImages = self.getAdditionalImages()
         return self._additionalImages
 
-    def _getReviews(self):
+
+    def getReviews(self):
         '''
         The same as calling `client.getReviews(build.setID)`
 
@@ -102,13 +105,15 @@ class Build(object):
         self._reviews = self._client.getReviews(self.setID)
         return self._reviews
 
+
     @property
     def reviews(self):
         if self._reviews is None:
-            self._reviews = self._getReviews()
+            self._reviews = self.getReviews()
         return self._reviews
 
-    def _getInstructions(self):
+
+    def getInstructions(self):
         '''
         The same as calling `client.getInstructions(build.setID)`
 
@@ -119,8 +124,9 @@ class Build(object):
         self._instructions = self._client.getInstructions(self.setID)
         return self._instructions
 
+
     @property 
     def instructions(self):
         if self._instructions is None:
-            self._instructions = self._getInstructions()
+            self._instructions = self.getInstructions()
         return self._instructions
